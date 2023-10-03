@@ -58,7 +58,7 @@ public class Category implements Serializable{
 		return products;
 	}
 
-	@Override
+	@Override 
 	public int hashCode() {
 		return Objects.hash(id);
 	}
