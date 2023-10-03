@@ -5,12 +5,15 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "tb_product")
@@ -25,13 +28,18 @@ public class Product implements Serializable{
 	private Double price;
 	private String imgUrl;
 	
-	@Transient
+	@ManyToMany(cascade = CascadeType.ALL) // muitos para muitos
+	@JoinTable(name = "tb_product_category", 
+	joinColumns = @JoinColumn(name = "product_id"),
+	inverseJoinColumns = @JoinColumn(name = "category_id"))
 	private Set<Category> categories = new HashSet<>(); //set representa um conjunto, garante que nao teremos um produto com mais de 1 ocorrencia da mesma categoria, o mesmo produto nao pode ter mais de 1 categoria de uma vez
 	//instanciamos para garantir que a colecao nao comece com o valor null; usamos o hashSet pois o set e uma interface, nao podendo ser instanciado, temos que usar uma classe correspondente a essa classe
 	
 	public Product() {
 	}
-	public Product(Long id, String name, String description, Double price, String imgUrl, Set<Category> categories) {
+	
+	public Product(Long id, String name, String description, Double price, String imgUrl) {
+		super();
 		this.id = id;
 		this.name = name;
 		this.description = description;
