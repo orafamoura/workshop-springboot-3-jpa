@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -34,6 +37,9 @@ public class Product implements Serializable{
 	inverseJoinColumns = @JoinColumn(name = "category_id"))
 	private Set<Category> categories = new HashSet<>(); //set representa um conjunto, garante que nao teremos um produto com mais de 1 ocorrencia da mesma categoria, o mesmo produto nao pode ter mais de 1 categoria de uma vez
 	//instanciamos para garantir que a colecao nao comece com o valor null; usamos o hashSet pois o set e uma interface, nao podendo ser instanciado, temos que usar uma classe correspondente a essa classe
+	
+	@OneToMany(mappedBy = "id.product") // id pegamos na classe orderItem e o .product pegamos no OrderItemPK
+	private Set<OrderItem> items = new HashSet<>();
 	
 	public Product() {
 	}
@@ -90,6 +96,15 @@ public class Product implements Serializable{
 	
 	public Set<Category> getCategories() {
 		return categories;
+	}
+	
+	@JsonIgnore
+	public Set<Order> getOrders(){
+		Set<Order> set = new HashSet<>();
+		for(OrderItem x : items) {
+			set.add(x.getOrder());
+		}
+		return set;
 	}
 	
 	@Override
